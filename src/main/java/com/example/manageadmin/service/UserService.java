@@ -1,10 +1,10 @@
 package com.example.manageadmin.service;
 
-import com.example.manageadmin.dto.UserCreateDTO;
-import com.example.manageadmin.dto.UserResponseDTO;
-import com.example.manageadmin.dto.UserUpdateDTO;
 import com.example.manageadmin.mapper.UserMapper;
-import com.example.manageadmin.model.User;
+import com.example.manageadmin.model.po.User;
+import com.example.manageadmin.model.dto.UserCreateDTO;
+import com.example.manageadmin.model.dto.UserResponseDTO;
+import com.example.manageadmin.model.dto.UserUpdateDTO;
 import com.example.manageadmin.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package com.example.manageadmin.repository;
 
 import org.apache.ibatis.annotations.*;
 
-import com.example.manageadmin.model.User;
+import com.example.manageadmin.model.po.User;
 
 import java.util.List;
 import java.util.Optional;

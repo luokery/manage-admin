@@ -1,8 +1,8 @@
 package com.example.manageadmin.controller;
 
-import com.example.manageadmin.dto.ProjectCreateDTO;
-import com.example.manageadmin.dto.ProjectResponseDTO;
-import com.example.manageadmin.dto.ProjectUpdateDTO;
+import com.example.manageadmin.model.dto.ProjectCreateDTO;
+import com.example.manageadmin.model.dto.ProjectResponseDTO;
+import com.example.manageadmin.model.dto.ProjectUpdateDTO;
 import com.example.manageadmin.service.ProjectService;
 
 import io.swagger.v3.oas.annotations.Operation;

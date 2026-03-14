@@ -1,4 +1,4 @@
-package com.example.manageadmin.dto;
+package com.example.manageadmin.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

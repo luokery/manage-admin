@@ -51,7 +51,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     	String projectHandler = MessageFormat.format("{0}/**", projectUrl);
     	String projectLocations = MessageFormat.format("file:{0}/", projectDir);
 
-    	log.info("增加静态文件映射:{}, {}", projectHandler, projectLocations);
+    	log.info("增加静态文件映射: {}, {}", projectHandler, projectLocations);
         // 配置静态资源映射，用于访问上传的项目图片
         registry.addResourceHandler( projectHandler).addResourceLocations( projectLocations);
         

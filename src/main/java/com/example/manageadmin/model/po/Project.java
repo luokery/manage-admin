@@ -1,4 +1,4 @@
-package com.example.manageadmin.model;
+package com.example.manageadmin.model.po;
 
 import lombok.Data;
 import java.time.LocalDateTime;
