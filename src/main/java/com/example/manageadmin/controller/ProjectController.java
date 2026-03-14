@@ -1,8 +1,8 @@
 package com.example.manageadmin.controller;
 
-import com.example.manageadmin.model.dto.ProjectCreateDTO;
-import com.example.manageadmin.model.dto.ProjectResponseDTO;
-import com.example.manageadmin.model.dto.ProjectUpdateDTO;
+import com.example.manageadmin.model.dto.project.ProjectCreateDTO;
+import com.example.manageadmin.model.dto.project.ProjectResponseDTO;
+import com.example.manageadmin.model.dto.project.ProjectUpdateDTO;
 import com.example.manageadmin.model.vo.ResponseVO;
 import com.example.manageadmin.model.vo.Result;
 import com.example.manageadmin.model.vo.project.ProjectEnum;

@@ -19,6 +19,11 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
     
+    @Value("${server.domain}")
+    private String domain;
+    @Value("${server.port}")
+    private String port;
+    
     @Value("${springdoc.security-schemes.name:bearer-key}")
     private String securitySchemesName;
     
@@ -45,7 +50,7 @@ public class OpenApiConfig {
                 .components(new Components()
                 		.addSecuritySchemes(securitySchemesName, createAPIKeyScheme()))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("开发环境")
+                        new Server().url(domain + ":" + port).description("开发环境")
                 ));
     }
     

@@ -1,8 +1,8 @@
 package com.example.manageadmin.controller;
 
-import com.example.manageadmin.model.dto.UserCreateDTO;
-import com.example.manageadmin.model.dto.UserResponseDTO;
-import com.example.manageadmin.model.dto.UserUpdateDTO;
+import com.example.manageadmin.model.dto.user.UserCreateDTO;
+import com.example.manageadmin.model.dto.user.UserResponseDTO;
+import com.example.manageadmin.model.dto.user.UserUpdateDTO;
 import com.example.manageadmin.model.vo.ResponseVO;
 import com.example.manageadmin.model.vo.Result;
 import com.example.manageadmin.service.UserService;

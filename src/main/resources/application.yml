@@ -11,7 +11,9 @@ spring:
   # 优雅停机超时时间（默认30秒）
   lifecycle:
     timeout-per-shutdown-phase: 30s
-
+#  main:
+#    lazy-initialization: true
+#    allow-bean-definition-overriding: true
 server:
   # 优雅停机配置
   shutdown: graceful

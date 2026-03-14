@@ -1,9 +1,9 @@
 package com.example.manageadmin.mapper;
 
-import com.example.manageadmin.model.dto.ProjectCreateDTO;
+import com.example.manageadmin.model.dto.project.ProjectCreateDTO;
 import com.example.manageadmin.model.po.Project;
-import com.example.manageadmin.model.dto.ProjectResponseDTO;
-import com.example.manageadmin.model.dto.ProjectUpdateDTO;
+import com.example.manageadmin.model.dto.project.ProjectResponseDTO;
+import com.example.manageadmin.model.dto.project.ProjectUpdateDTO;
 
 import org.mapstruct.*;
 import java.util.List;
