@@ -150,7 +150,43 @@
         </dependency>
     </dependencies>
     
-    <build>
+	<!-- 多环境打包 -->
+	<profiles>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profiles.active>local</spring.profiles.active>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<spring.profiles.active>dev</spring.profiles.active>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<spring.profiles.active>test</spring.profiles.active>
+				<maven.test.skip>false</maven.test.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<spring.profiles.active>prod</spring.profiles.active>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+		</profile>
+	</profiles>
+	
+	<build>
+		<finalName>${project.artifactId}-${project.version}-${spring.profiles.active}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -169,7 +205,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -193,5 +228,33 @@
                 </configuration>
             </plugin>
         </plugins>
+		<!-- 项目 resources 概况 -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<!-- 
+					<include>*.*</include>-->
+					<!-- -->
+					<include>application.yml</include>
+					<include>/config/application-${spring.profiles.active}*</include>
+					<include>log4j2.xml</include>
+					<!-- -->
+					<include>db/*</include>
+					<include>static/*</include>
+				</includes>
+				<!-- maven 管理文件中的变量替换 -->
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>banner.txt</include>
+					<include>i18n/**</include>
+					<include>mapper/**</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
     </build>
 </project>

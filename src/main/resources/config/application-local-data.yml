@@ -1,0 +1,146 @@
+spring:
+  data:
+    # 系统缓存Redis配置(这里的Redis配置主要用于鉴权认证等模板自带服务的系统缓存服务，要求Redis版本在7.0以上)
+    redis:
+      # 单机地址(单价模式配置和集群模式配置只能存在一个)
+      host: 127.0.0.1
+      # 单机端口，默认为6379
+      port: 6379
+      # 集群地址(单价模式配置和集群模式配置只能存在一个)
+      #cluster:
+      #  nodes:
+      #    - 10.0.0.183:6379
+      #    - 10.0.0.183:6380
+      #    - 10.0.0.184:6379
+      # 数据库索引
+      database: 0
+      # 密码(考虑是否需要密码)
+      password: 123456
+      # 连接超时时间
+      timeout: 3s
+      # Whether to enable SSL support.
+      ssl: 
+        enabled: false
+      # redis连接池
+      lettuce:
+        pool:
+          # 最小空闲连接数
+          min-idle: 8
+          # 最大空闲连接数
+          max-idle: 25
+          # 最大活动连接数
+          max-active: 50
+          # 最大等待时间/ms
+          max-wait: 3000
+          time-between-eviction-runs: 10s
+          shutdown-timeout: 100ms
+
+---
+spring:
+  redis:
+    # 业务缓存Redisson配置
+    # 如果同时开启单机版本和集群版本，只有单机版本生效
+    redisson:
+      # 集群模式:SINGLE(单例),SENTINEL(哨兵),MASTERSLAVE(主从),CLUSTER(集群),REPLICATED(云托管)
+      mode: CLUSTER
+      # 线程池数量
+      threads: 4
+      # Netty线程池数量
+      netty-threads: 8
+      # 传输模式
+      transportMode: "NIO"
+      # (监控锁的看门狗超时，单位：毫秒)
+      lockWatchdogTimeout: 30000
+      # 编码方式
+      codec: "!<org.redisson.codec.JsonJacksonCodec>{}"
+      # Redis单机版本
+      single-server-config:
+        # todo 是否启动单机Redis(Redisson)缓存(预先关闭)
+        enable-single: false
+        # 单机地址
+        address: redis://127.0.0.1:6379
+        # 数据库索引
+        database: 1
+        # 密码(考虑是否需要密码)
+        password: 123456
+        # 命令等待超时，单位：毫秒
+        timeout: 3000
+        # 发布和订阅连接池大小
+        subscription-connection-pool-size: 25
+        # 最小空闲连接数
+        connection-minimum-idle-size: 8
+        # 连接池大小
+        connection-pool-size: 32
+        # 连接空闲超时，单位：毫秒
+        idle-connection-timeout: 10000
+      # Redis集群版本
+      cluster-servers-config:
+        # todo 是否启动集群Redis(Redisson)缓存(预先关闭)
+        enable-cluster: false
+        # 集群扫描间隔时间
+        scanInterval: 1000
+        # Redis集群节点
+        node-addresses:
+          - redis://10.0.0.183:6379
+          - redis://10.0.0.183:6380
+          - redis://10.0.0.184:6379
+        # 密码
+        password: 123456
+        # master最小空闲连接数
+        master-connection-minimum-idleSize: 16
+        # master连接池大小
+        master-connection-pool-size: 32
+        # slave最小空闲连接数
+        slave-connection-minimum-idle-size: 16
+        # slave连接池大小
+        slave-connection-pool-size: 32
+        # 连接空闲超时，单位：毫秒
+        idle-connection-timeout: 10000
+        # 命令等待超时，单位：毫秒
+        timeout: 3000
+        # 发布和订阅连接池大小
+        subscription-connection-pool-size: 25
+
+---
+#spring:
+  # 配置缓存,初始缓存容量为10,最大容量为200,过期时间(这里配置写入后过期时间为3秒)
+#  cache:
+#    type: redis
+#    caffeine:
+#      spec: initialCapacity=10,maximumSize=200,expireAfterWrite=30s
+# Caffeine常用配置说明：
+# initialCapacity=[integer]: 初始的缓存空间大小
+# maximumSize=[long]: 缓存的最大条数
+# maximumWeight=[long]: 缓存的最大权重
+# expireAfterAccess=[duration]: 最后一次写入或访问后经过固定时间过期
+# expireAfterWrite=[duration]: 最后一次写入后经过固定时间过期
+# refreshAfterWrite=[duration]: 创建缓存或者最近一次更新缓存后经过固定的时间间隔，刷新缓存
+# Caffeine本地缓存配置
+caffeine:
+  # todo 是否启动(预先关闭)
+  enable: false
+  caffeines:
+    - userCache:
+      name: userCache
+      # 缓存初始容量
+      initCapacity: 10
+      # 缓存最大容量，超过之后会按照最近最少策略进行缓存剔除
+      maxCapacity: 1000
+      # 是否允许空值null作为缓存的value
+      allowNullValue: true
+      recordStats: true
+      expireAfterWrite: true
+      expireAfterWrite_expired: 3000
+      expireAfterAccess: false
+      expireAfterAccess_expired: 3000
+      refreshAfterWrite: false
+      refreshAfterWrite_expired: 3000
+    - roleCache:
+      name: roleCache
+      initCapacity: 10
+      maxCapacity: 1000
+      allowNullValue: true
+      recordStats: true
+      expireAfterWrite: true
+      expireAfterWrite_expired: 3000
+

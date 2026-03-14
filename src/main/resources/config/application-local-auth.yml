@@ -1,0 +1,14 @@
+# ==================== auth 配置 ====================
+# JWT 配置
+jwt:
+  secret: mySecretKeyForJwtTokenGenerationAndValidationMustBeAtLeast256BitsLong
+  expiration: 86400000  # 24小时 (毫秒)
+  header: Authorization
+  prefix: "Bearer "
+
+# Shiro 配置
+shiro:
+  enabled: true
+  web:
+    enabled: true
+  loginUrl: /api/auth/login

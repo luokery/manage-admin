@@ -1,0 +1,107 @@
+# ==================== Spring Boot Actuator 配置 ====================
+management:
+  # 端点配置
+  endpoints:
+    web:
+      # 暴露的端点
+      exposure:
+        include: health,info,metrics,env,loggers,heapdump,threaddump,prometheus
+        # 排除的端点（可选）
+        # exclude: shutdown
+      # 端点基础路径
+      base-path: /actuator
+  # 端点详细配置
+  endpoint:
+    # 健康检查端点
+    health:
+      enabled: true
+      show-details: always  # 显示详细信息(开发环境) 生产环境建议改为 when-authorized
+      show-components: always
+      # 自定义健康检查
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+    # 信息端点
+    info:
+      enabled: true
+    # 指标端点
+    metrics:
+      enabled: true
+    # 环境变量端点
+    env:
+      enabled: true
+    # 日志配置端点
+    loggers:
+      enabled: true
+    # 堆转储端点
+    heapdump:
+      enabled: true
+    # 线程转储端点
+    threaddump:
+      enabled: true
+    # Prometheus 指标端点
+    prometheus:
+      enabled: true
+    # 关闭端点（禁用，安全考虑）
+    shutdown:
+      enabled: false
+  # 健康检查配置
+  health:
+    # 数据库健康检查
+    db:
+      enabled: true
+    # 磁盘空间健康检查
+    diskspace:
+      enabled: true
+      threshold: 10MB
+    # 缓存健康检查
+    cache:
+      enabled: true
+    # 自定义健康检查间隔
+    defaults:
+      enabled: true
+  # 指标配置
+  metrics:
+    enabled: true
+    tags:
+      application: ${spring.application.name:user-management}
+    # Web 请求指标
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
+    # 数据源指标
+    datasource:
+      enabled: true
+    # JVM 指标
+    jvm:
+      enabled: true
+    # 系统指标
+    system:
+      enabled: true
+    # 进程指标
+    process:
+      enabled: true
+  # 信息配置
+  info:
+    # 构建信息
+    build:
+      enabled: true
+    # 环境信息
+    env:
+      enabled: true
+    # Git 信息（需要 git.properties 文件）
+    git:
+      enabled: true
+      mode: full
+    # Java 信息
+    java:
+      enabled: true
+    # 操作系统信息
+    os:
+      enabled: true

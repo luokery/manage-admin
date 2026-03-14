@@ -1,0 +1,30 @@
+# springboot 2.4 后config变更. 参考:https://spring.io/blog/2020/08/14/config-file-processing-in-spring-boot-2-4
+spring:
+  config:
+    activate:
+      on-profile:
+        - local
+    import:
+      #- application-local-actuator.yml
+      #- application-local-auth.yml
+      #- application-local-data.yml
+      - application-local-datasource.yml
+      - application-local-springdoc.yml
+server:
+  port: ${PORT:5000}
+  # 优雅停机配置
+  shutdown: graceful
+  # 类似http://127.0.0.1这样的格式，这里仅做一个记录
+  domain: http://localhost
+  servlet:
+    # 项目基础URI
+    context-path: /
+## -----------------------   开发测试热更新 配置   -----------------------
+---
+spring:
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+      add-properties: true

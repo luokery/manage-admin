@@ -1,0 +1,48 @@
+## -----------------------   spring datasource 配置   -----------------------
+---
+spring:
+  datasource:
+    # 1. 连接池使用 druid
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 2. 使用数据库平台(非必须)
+    platform: h2
+    # 3. url请修改为您的数据库连接
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:managedb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    druid:
+      # 连接池配置
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      # Druid StatViewServlet配置: 注意, 这里如果被其它过滤器拦截, 并修改了请求, 可能造成无法登陆druid后台
+      stat-view-servlet:
+        enabled: true
+        reset-enable: true
+        login-username: admin
+        login-password: admin123
+        allow: '127.0.0.1,10.0.0.1'
+        deny: '10.0.0.1,10.0.0.2'
+      web-stat-filter:
+        enabled: true
+      filter:
+        slf4j:
+          enabled: false
+        stat:
+          enabled: true
+        wall:
+          enabled: true
+
+# h2控制台配置
+  h2:
+    console:
+      enabled: true
+      path: /h2
+# 数据库初始化配置
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema_h2.sql
+      data-locations: classpath:db/data_h2.sql

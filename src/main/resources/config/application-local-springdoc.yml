@@ -1,0 +1,7 @@
+springdoc:
+  api-docs:
+    # springdoc api文档访问控制
+    enabled: true
+  swagger-ui:
+    # swagger-ui文档访问控制
+    enabled: true

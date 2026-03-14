@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,10 @@ public class ProjectController {
     
     private final ProjectService projectService;
     
-    @Value("${file.upload-dir:/tmp/uploads/projects}")
-    private String uploadDir;
+    @Value("${file.project-dir:/tmp/uploads/projects}")
+    private String projectsDir;
+    @Value("${file.project-url:/tmp/uploads/projects}")
+    private String projectUrl;
     
     @Operation(summary = "获取项目列表", description = "获取所有项目的列表信息")
     @ApiResponses(value = {
@@ -136,7 +139,7 @@ public class ProjectController {
             }
             
             // 创建上传目录
-            Path uploadPath = Paths.get(uploadDir);
+            Path uploadPath = Paths.get(projectsDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
@@ -150,10 +153,10 @@ public class ProjectController {
             
             // 保存文件
             Path filePath = uploadPath.resolve(newFilename);
-            file.transferTo(filePath.toFile());
-            
+//            file.transferTo(filePath.toFile());
+            file.transferTo( new File(filePath.toUri()) );
             // 生成访问URL
-            String imageUrl = "/uploads/projects/" + newFilename;
+            String imageUrl = MessageFormat.format( "{0}/{1}", projectUrl, newFilename);
             
             // 更新项目图片URL
             projectService.updateProjectImage(id, imageUrl);
