@@ -130,6 +130,8 @@ springdoc:
     path: /swagger-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
+  security-schemes:
+    name: bearer-key
   group-configs:
     - group: "all service"
       displayName: 全部服务 API
