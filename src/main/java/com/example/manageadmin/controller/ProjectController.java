@@ -3,6 +3,9 @@ package com.example.manageadmin.controller;
 import com.example.manageadmin.model.dto.ProjectCreateDTO;
 import com.example.manageadmin.model.dto.ProjectResponseDTO;
 import com.example.manageadmin.model.dto.ProjectUpdateDTO;
+import com.example.manageadmin.model.vo.ResponseVO;
+import com.example.manageadmin.model.vo.Result;
+import com.example.manageadmin.model.vo.project.ProjectEnum;
 import com.example.manageadmin.service.ProjectService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,8 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,9 +49,9 @@ public class ProjectController {
             @ApiResponse(responseCode = "200", description = "成功获取项目列表")
     })
     @GetMapping
-    public ResponseEntity<Result<List<ProjectResponseDTO>>> getAllProjects() {
+    public ResponseVO<List<ProjectResponseDTO>> getAllProjects() {
         List<ProjectResponseDTO> projects = projectService.getAllProjects();
-        return ResponseEntity.ok(Result.success(projects, "获取项目列表成功"));
+        return Result.success( projects, ProjectEnum.LIST_SUCCESS);
     }
     
     @Operation(summary = "获取项目详情", description = "根据项目ID获取项目详细信息")
@@ -59,10 +60,10 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "项目不存在")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Result<ProjectResponseDTO>> getProjectById(
+    public ResponseVO<ProjectResponseDTO> getProjectById(
             @Parameter(description = "项目ID", required = true) @PathVariable Long id) {
         ProjectResponseDTO project = projectService.getProjectById(id);
-        return ResponseEntity.ok(Result.success(project, "获取项目详情成功"));
+        return Result.success( project, ProjectEnum.Details_SUCCESS);
     }
     
     @Operation(summary = "搜索项目", description = "根据关键词搜索项目（支持项目名称和编号模糊匹配）")
@@ -70,10 +71,10 @@ public class ProjectController {
             @ApiResponse(responseCode = "200", description = "搜索成功")
     })
     @GetMapping("/search")
-    public ResponseEntity<Result<List<ProjectResponseDTO>>> searchProjects(
+    public ResponseVO<List<ProjectResponseDTO>> searchProjects(
             @Parameter(description = "搜索关键词", required = true) @RequestParam String keyword) {
         List<ProjectResponseDTO> projects = projectService.searchProjects(keyword);
-        return ResponseEntity.ok(Result.success(projects, "搜索项目成功"));
+        return Result.success( projects, "搜索项目成功");
     }
     
     @Operation(summary = "按状态获取项目", description = "根据状态获取项目列表")
@@ -81,10 +82,10 @@ public class ProjectController {
             @ApiResponse(responseCode = "200", description = "成功获取项目列表")
     })
     @GetMapping("/status/{status}")
-    public ResponseEntity<Result<List<ProjectResponseDTO>>> getProjectsByStatus(
+    public ResponseVO<List<ProjectResponseDTO>> getProjectsByStatus(
             @Parameter(description = "状态：1-进行中，2-已完成，0-已暂停", required = true) @PathVariable Integer status) {
         List<ProjectResponseDTO> projects = projectService.getProjectsByStatus(status);
-        return ResponseEntity.ok(Result.success(projects, "获取项目列表成功"));
+        return Result.success(projects, "获取项目列表成功");
     }
     
     @Operation(summary = "创建项目", description = "创建新项目")
@@ -93,12 +94,11 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "参数验证失败或项目编号已存在")
     })
     @PostMapping
-    public ResponseEntity<Result<ProjectResponseDTO>> createProject(
+    public ResponseVO<ProjectResponseDTO> createProject(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "项目创建信息", required = true)
             @Valid @RequestBody ProjectCreateDTO dto) {
         ProjectResponseDTO project = projectService.createProject(dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Result.success(project, "创建项目成功"));
+        return Result.success(project, "创建项目成功");
     }
     
     @Operation(summary = "更新项目", description = "根据项目ID更新项目信息")
@@ -107,12 +107,12 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "项目不存在或参数验证失败")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Result<ProjectResponseDTO>> updateProject(
+    public ResponseVO<ProjectResponseDTO> updateProject(
             @Parameter(description = "项目ID", required = true) @PathVariable Long id,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "项目更新信息", required = true)
             @Valid @RequestBody ProjectUpdateDTO dto) {
         ProjectResponseDTO project = projectService.updateProject(id, dto);
-        return ResponseEntity.ok(Result.success(project, "更新项目成功"));
+        return Result.success(project, "更新项目成功");
     }
     
     @Operation(summary = "上传项目图片", description = "为项目上传图片")
@@ -121,21 +121,19 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "项目不存在或文件上传失败")
     })
     @PostMapping("/{id}/image")
-    public ResponseEntity<Result<Map<String, String>>> uploadProjectImage(
+    public ResponseVO<Map<String, String>> uploadProjectImage(
             @Parameter(description = "项目ID", required = true) @PathVariable Long id,
             @Parameter(description = "项目图片文件", required = true) @RequestParam("file") MultipartFile file) {
         
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(Result.error(400, "请选择要上传的文件"));
+            return Result.build(400, "请选择要上传的文件");
         }
         
         try {
             // 检查文件类型
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
-                return ResponseEntity.badRequest()
-                        .body(Result.error(400, "只能上传图片文件"));
+                return Result.build(400, "只能上传图片文件");
             }
             
             // 创建上传目录
@@ -165,11 +163,10 @@ public class ProjectController {
             data.put("imageUrl", imageUrl);
             data.put("filename", newFilename);
             
-            return ResponseEntity.ok(Result.success(data, "图片上传成功"));
+            return Result.success(data, "图片上传成功");
             
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Result.error(500, "文件上传失败: " + e.getMessage()));
+            return Result.build(500, "文件上传失败: " + e.getMessage(), null);
         }
     }
     
@@ -179,10 +176,10 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "项目不存在")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Result<Void>> deleteProject(
+    public ResponseVO<Void> deleteProject(
             @Parameter(description = "项目ID", required = true) @PathVariable Long id) {
         projectService.deleteProject(id);
-        return ResponseEntity.ok(Result.success(null, "删除项目成功"));
+        return Result.success(null, "删除项目成功");
     }
     
     @Operation(summary = "获取项目数量", description = "获取系统中项目的总数")
@@ -190,12 +187,12 @@ public class ProjectController {
             @ApiResponse(responseCode = "200", description = "成功获取项目数量")
     })
     @GetMapping("/count")
-    public ResponseEntity<Result<Map<String, Object>>> getProjectCount() {
+    public ResponseVO<Map<String, Object>> getProjectCount() {
         Map<String, Object> data = new HashMap<>();
         data.put("total", projectService.getProjectCount());
         data.put("inProgress", projectService.getProjectCountByStatus(1));
         data.put("completed", projectService.getProjectCountByStatus(2));
         data.put("paused", projectService.getProjectCountByStatus(0));
-        return ResponseEntity.ok(Result.success(data, "获取项目数量成功"));
+        return Result.success(data, "获取项目数量成功");
     }
 }

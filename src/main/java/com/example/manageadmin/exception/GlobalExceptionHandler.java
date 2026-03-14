@@ -1,13 +1,14 @@
 package com.example.manageadmin.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.manageadmin.controller.Result;
+import com.example.manageadmin.model.vo.ResponseVO;
+import com.example.manageadmin.model.vo.Result;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,13 +17,14 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Result<Void>> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Result.error(400, e.getMessage()));
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseVO<Void> handleRuntimeException(RuntimeException e) {
+        return Result.build(400, e.getMessage());
     }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Result<Map<String, String>>> handleValidationException(
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseVO<Map<String, String>> handleValidationException(
             MethodArgumentNotValidException e) {
         Map<String, String> errors = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach(error -> {
@@ -30,15 +32,13 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new Result<>(400, "参数验证失败", errors));
+        return Result.build(400, "参数验证失败", errors);
     }
     
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Result<Void>> handleException(Exception e) {
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseVO<Void> handleException(Exception e) {
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Result.error(500, "服务器内部错误: " + e.getMessage()));
+        return Result.build(500, "服务器内部错误: " + e.getMessage());
     }
 }

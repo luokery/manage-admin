@@ -1,0 +1,26 @@
+package com.example.manageadmin.cosnst;
+
+/**
+ * 系统基础常量
+ * @author 
+ */
+public interface ConstSysBase {
+	
+	/**
+	 * 认证token
+	 */
+	public static final String AUTHORIZATION_KEY = "access_token";
+	
+	/**
+	 * 日志流水号
+	 */
+	public static final String SERIAL_NUMBER_KEY = "serial_Number_trace_Id";
+	
+	/**
+	 * 验证码存活时间
+	 */
+	public static final Long VERIFICATION_CODE_TIME = 5l;
+	
+	public static final String SESSION_ID_KEY_PREFIX = "session:redis:";
+
+}

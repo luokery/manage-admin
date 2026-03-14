@@ -6,9 +6,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.manageadmin.model.vo.ResponseVO;
+import com.example.manageadmin.model.vo.Result;
 import com.example.manageadmin.service.CacheService;
 
 import java.util.HashMap;
@@ -31,9 +32,9 @@ public class CacheController {
             @ApiResponse(responseCode = "200", description = "缓存清除成功")
     })
     @DeleteMapping("/all")
-    public ResponseEntity<Result<String>> clearAllCaches() {
+    public ResponseVO<String> clearAllCaches() {
         cacheService.clearAllCaches();
-        return ResponseEntity.ok(Result.success("所有缓存已清除", "操作成功"));
+        return Result.success("所有缓存已清除", "操作成功");
     }
 
     @Operation(summary = "清除指定缓存", description = "清除指定名称的缓存")
@@ -41,11 +42,11 @@ public class CacheController {
             @ApiResponse(responseCode = "200", description = "缓存清除成功")
     })
     @DeleteMapping("/{cacheName}")
-    public ResponseEntity<Result<String>> clearCache(
+    public ResponseVO<String> clearCache(
             @Parameter(description = "缓存名称 (users/projects/statistics)", required = true)
             @PathVariable String cacheName) {
         cacheService.clearCache(cacheName);
-        return ResponseEntity.ok(Result.success("缓存 " + cacheName + " 已清除", "操作成功"));
+        return Result.success("缓存 " + cacheName + " 已清除");
     }
 
     @Operation(summary = "获取缓存状态", description = "获取系统中各缓存的状态信息")
@@ -53,9 +54,9 @@ public class CacheController {
             @ApiResponse(responseCode = "200", description = "获取成功")
     })
     @GetMapping("/stats")
-    public ResponseEntity<Result<Map<String, Object>>> getCacheStats() {
+    public ResponseVO<Map<String, Object>> getCacheStats() {
         Map<String, Object> data = new HashMap<>();
         data.put("stats", cacheService.getCacheStats());
-        return ResponseEntity.ok(Result.success(data, "获取缓存状态成功"));
+        return Result.success(data, "获取缓存状态成功");
     }
 }
