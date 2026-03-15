@@ -1,8 +1,12 @@
 package com.example.manageadmin.service;
 
+import com.example.manageadmin.model.bo.ProjectPageBO;
 import com.example.manageadmin.model.dto.project.ProjectCreateDTO;
 import com.example.manageadmin.mapper.ProjectMapper;
+import com.example.manageadmin.model.po.Page;
 import com.example.manageadmin.model.po.Project;
+import com.example.manageadmin.model.vo.PageDTO;
+import com.example.manageadmin.model.vo.project.ProjectQueryDTO;
 import com.example.manageadmin.model.dto.project.ProjectResponseDTO;
 import com.example.manageadmin.model.dto.project.ProjectUpdateDTO;
 import com.example.manageadmin.repository.ProjectRepository;
@@ -39,6 +43,37 @@ public class ProjectService {
     public List<ProjectResponseDTO> getAllProjects() {
         log.debug("从数据库加载所有项目");
         return projectMapper.toResponseDTOList(projectRepository.findAll());
+    }
+
+    /**
+     * 分页查询项目列表
+     * 支持多条件查询和排序
+     */
+    public PageDTO<ProjectResponseDTO, ProjectQueryDTO> queryProjects(PageDTO<ProjectResponseDTO, ProjectQueryDTO> query) {
+        log.debug("分页查询项目: {}", query);
+
+        ProjectQueryDTO queryParamDTO = query.getDataParam();
+        // 验证日期范围
+        if (!queryParamDTO.isValidDateRange()) {
+            throw new IllegalArgumentException("日期范围无效：起始日期不能晚于结束日期");
+        }
+
+        // 验证分页参数
+        if (!query.isValidPagination()) {
+            throw new IllegalArgumentException("分页参数无效：页码不能为负数，每页大小必须在1-100之间");
+        }
+        
+        Page pagePO = ProjectMapper.INSTANCE.toPagePO(query);
+        ProjectPageBO paramPageBO = ProjectMapper.INSTANCE.toPageBO(queryParamDTO);
+        
+        // 查询数据
+        List<Project> projects = projectRepository.queryPageList(pagePO, paramPageBO);
+        long total = projectRepository.queryCount(paramPageBO);
+
+        // 转换为 DTO
+        List<ProjectResponseDTO> dataList = projectMapper.toResponseDTOList(projects);
+//        query.result(dataList, queryParamDTO, query.getPageNumber(), query.getPageSize(), total);
+        return PageDTO.of(dataList, queryParamDTO, query.getPageNumber(), query.getPageSize(), total);
     }
     
     /**

@@ -10,15 +10,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.manageadmin.model.vo.ResponseVO;
 import com.example.manageadmin.model.vo.Result;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 统一错误处理
+ */
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseVO<Void> handleRuntimeException(RuntimeException e) {
+    	log.error(e.getMessage());
         return Result.build(400, e.getMessage());
     }
     
@@ -32,13 +39,14 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+        log.error("参数验证失败: {}", errors);
         return Result.build(400, "参数验证失败", errors);
     }
     
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseVO<Void> handleException(Exception e) {
-        e.printStackTrace();
+        log.error("服务器内部错误: {}", e.getMessage());
         return Result.build(500, "服务器内部错误: " + e.getMessage());
     }
 }

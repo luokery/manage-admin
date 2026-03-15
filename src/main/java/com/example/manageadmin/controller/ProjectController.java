@@ -1,12 +1,18 @@
 package com.example.manageadmin.controller;
 
+import com.example.manageadmin.mapper.ProjectMapper;
 import com.example.manageadmin.model.dto.project.ProjectCreateDTO;
 import com.example.manageadmin.model.dto.project.ProjectResponseDTO;
 import com.example.manageadmin.model.dto.project.ProjectUpdateDTO;
+import com.example.manageadmin.model.vo.PageDTO;
+import com.example.manageadmin.model.vo.PageParamVO;
+import com.example.manageadmin.model.vo.PageVO;
 import com.example.manageadmin.model.vo.ResponseVO;
 import com.example.manageadmin.model.vo.Result;
 import com.example.manageadmin.model.vo.project.ProjectEnum;
+import com.example.manageadmin.model.vo.project.ProjectQueryDTO;
 import com.example.manageadmin.service.ProjectService;
+import com.example.manageadmin.validation.QueryPageGroup;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +109,18 @@ public class ProjectController {
         return Result.success(project, "创建项目成功");
     }
     
+    @Operation(summary = "删除项目", description = "根据项目ID删除项目")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "项目删除成功"),
+            @ApiResponse(responseCode = "400", description = "项目不存在")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseVO<Void> deleteProject(
+            @Parameter(description = "项目ID", required = true) @PathVariable Long id) {
+        projectService.deleteProject(id);
+        return Result.success(null, "删除项目成功");
+    }
+    
     @Operation(summary = "更新项目", description = "根据项目ID更新项目信息")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "项目更新成功"),
@@ -170,18 +190,6 @@ public class ProjectController {
         }
     }
     
-    @Operation(summary = "删除项目", description = "根据项目ID删除项目")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "项目删除成功"),
-            @ApiResponse(responseCode = "400", description = "项目不存在")
-    })
-    @DeleteMapping("/{id}")
-    public ResponseVO<Void> deleteProject(
-            @Parameter(description = "项目ID", required = true) @PathVariable Long id) {
-        projectService.deleteProject(id);
-        return Result.success(null, "删除项目成功");
-    }
-    
     @Operation(summary = "获取项目数量", description = "获取系统中项目的总数")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "成功获取项目数量")
@@ -195,4 +203,42 @@ public class ProjectController {
         data.put("paused", projectService.getProjectCountByStatus(0));
         return Result.success(data, "获取项目数量成功");
     }
+    
+    @Operation(summary = "分页查询项目", description = "支持多条件查询、分页和排序")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "成功获取项目列表"),
+            @ApiResponse(responseCode = "400", description = "参数验证失败")
+    })
+    @PostMapping("/page")
+    public ResponseVO< PageVO<ProjectResponseDTO>> queryPageProjects( @Validated(QueryPageGroup.class) @RequestBody PageParamVO<ProjectQueryDTO> pageParamVO) {
+        
+    	PageDTO<ProjectResponseDTO, ProjectQueryDTO> pageDTO = ProjectMapper.INSTANCE.toPageDTO(pageParamVO);
+    	pageDTO.setDataParam( pageParamVO.getData());
+    	
+        PageDTO<ProjectResponseDTO, ProjectQueryDTO> resultDTO = projectService.queryProjects( pageDTO);
+        
+        PageVO<ProjectResponseDTO> result = ProjectMapper.INSTANCE.toPageVO(resultDTO);
+        
+        return Result.success(result, "查询成功");
+    }
+    
+    /**
+     * 解析日期时间字符串
+     */
+    private LocalDateTime parseDateTime(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(dateStr);
+        } catch (Exception e) {
+            // 尝试只解析日期部分（格式：yyyy-MM-dd）
+            try {
+                return java.time.LocalDate.parse(dateStr).atStartOfDay();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+    }
 }
+

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.manageadmin.repository.ProjectRepository">
+	 
+    <!-- 分页查询项目列表（排除已删除） -->
+    <select id="queryPageList" resultType="com.example.manageadmin.model.po.Project">
+        SELECT * FROM projects
+        <where>
+            deleted = false
+            <if test="po.projectCode != null and po.projectCode != ''">
+                AND project_code LIKE CONCAT('%', #{po.projectCode}, '%')
+            </if>
+            <if test="po.projectName != null and po.projectName != ''">
+                AND project_name LIKE CONCAT('%', #{po.projectName}, '%')
+            </if>
+            <if test="po.status != null">
+                AND status = #{po.status}
+            </if>
+            <if test="po.startDateFrom != null">
+                AND start_date &gt;= #{po.startDateFrom}
+            </if>
+            <if test="po.startDateTo != null">
+                AND start_date &lt;= #{po.startDateTo}
+            </if>
+            <if test="po.endDateFrom != null">
+                AND end_date &gt;= #{po.endDateFrom}
+            </if>
+            <if test="po.endDateTo != null">
+                AND end_date &lt;= #{po.endDateTo}
+            </if>
+            <if test="po.createdAtFrom != null">
+                AND created_at &gt;= #{po.createdAtFrom}
+            </if>
+            <if test="po.createdAtTo != null">
+                AND created_at &lt;= #{po.createdAtTo}
+            </if>
+            <if test="po.keyword != null and po.keyword != ''">
+                AND (project_name LIKE CONCAT('%', #{po.keyword}, '%') OR project_code LIKE CONCAT('%', #{po.keyword}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="po.sortBy != null and po.sortBy != ''">
+                ORDER BY ${po.sortBy}
+                <if test="po.sortDirection != null and po.sortDirection != ''">
+                    ${po.sortDirection}
+                </if>
+            </when>
+            <otherwise>
+                ORDER BY created_at DESC
+            </otherwise>
+        </choose>
+        <if test="page.pageSize > 0">
+            LIMIT #{page.pageSize} OFFSET #{page.offset}
+        </if>
+    </select>
+
+    <!-- 统计查询结果数量（排除已删除） -->
+    <select id="queryCount" resultType="long">
+        SELECT COUNT(*) FROM projects
+        <where>
+            deleted = false
+            <if test="po.projectCode != null and po.projectCode != ''">
+                AND project_code LIKE CONCAT('%', #{po.projectCode}, '%')
+            </if>
+            <if test="po.projectName != null and po.projectName != ''">
+                AND project_name LIKE CONCAT('%', #{po.projectName}, '%')
+            </if>
+            <if test="po.status != null">
+                AND status = #{po.status}
+            </if>
+            <if test="po.startDateFrom != null">
+                AND start_date &gt;= #{po.startDateFrom}
+            </if>
+            <if test="po.startDateTo != null">
+                AND start_date &lt;= #{po.startDateTo}
+            </if>
+            <if test="po.endDateFrom != null">
+                AND end_date &gt;= #{po.endDateFrom}
+            </if>
+            <if test="po.endDateTo != null">
+                AND end_date &lt;= #{po.endDateTo}
+            </if>
+            <if test="po.createdAtFrom != null">
+                AND created_at &gt;= #{po.createdAtFrom}
+            </if>
+            <if test="po.createdAtTo != null">
+                AND created_at &lt;= #{po.createdAtTo}
+            </if>
+            <if test="po.keyword != null and po.keyword != ''">
+                AND (project_name LIKE CONCAT('%', #{po.keyword}, '%') OR project_code LIKE CONCAT('%', #{po.keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+</mapper>

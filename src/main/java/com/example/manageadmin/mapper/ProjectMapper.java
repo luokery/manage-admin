@@ -1,16 +1,26 @@
 package com.example.manageadmin.mapper;
 
+import com.example.manageadmin.model.bo.ProjectPageBO;
 import com.example.manageadmin.model.dto.project.ProjectCreateDTO;
+import com.example.manageadmin.model.po.Page;
 import com.example.manageadmin.model.po.Project;
+import com.example.manageadmin.model.vo.PageDTO;
+import com.example.manageadmin.model.vo.PageParamVO;
+import com.example.manageadmin.model.vo.PageVO;
+import com.example.manageadmin.model.vo.project.ProjectQueryDTO;
 import com.example.manageadmin.model.dto.project.ProjectResponseDTO;
 import com.example.manageadmin.model.dto.project.ProjectUpdateDTO;
 
 import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
+
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
     
+	ProjectMapper INSTANCE = Mappers.getMapper( ProjectMapper.class );
+	
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "imageUrl", ignore = true)
     @Mapping(target = "status", constant = "1")
@@ -36,4 +46,12 @@ public interface ProjectMapper {
             default -> "未知";
         };
     }
+//====================================================
+	PageDTO<ProjectResponseDTO, ProjectQueryDTO> toPageDTO(PageParamVO<ProjectQueryDTO> pageParamVO);
+
+	PageVO<ProjectResponseDTO> toPageVO(PageDTO<ProjectResponseDTO, ProjectQueryDTO> resultDTO);
+
+	Page toPagePO(PageDTO<ProjectResponseDTO, ProjectQueryDTO> query);
+
+	ProjectPageBO toPageBO(ProjectQueryDTO queryParamDTO);
 }

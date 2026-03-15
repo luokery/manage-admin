@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Mapper
-public interface ProjectRepository {
+public interface ProjectRepository extends BaseRepository<Project>{
     
     @Select("SELECT * FROM projects ORDER BY created_at DESC")
     List<Project> findAll();
@@ -43,4 +43,5 @@ public interface ProjectRepository {
     
     @Select("SELECT COUNT(*) FROM projects WHERE status = #{status}")
     long countByStatus(Integer status);
+
 }
