@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.manageadmin.repository.ProjectRepository">
-	 
+
+  <sql id="Common_Base_Column_List">
+		created_at, updated_at
+  </sql>
+  
+  <sql id="Entity_Base_Column_List">
+  		project_code, project_name, description, image_url, status, start_date, end_date
+  </sql>
+  
+  <sql id="Base_Column_List">
+		<include refid="Entity_Base_Column_List" />
+		<include refid="Common_Base_Column_List" />
+  </sql>
+    <!-- **************************************************************************************** -->
+    <!-- 创建 -->
+    
+    <!-- **************************************************************************************** -->
+    <!-- 删除 -->
+
+    <!-- **************************************************************************************** -->
+    <!-- 修改 -->
+
+    <!-- **************************************************************************************** -->
+    <!-- 查询 -->
     <!-- 分页查询项目列表（排除已删除） -->
     <select id="queryPageList" resultType="com.example.manageadmin.model.po.Project">
         SELECT * FROM projects
         <where>
-            deleted = false
+            delete_id = 0
             <if test="po.projectCode != null and po.projectCode != ''">
                 AND project_code LIKE CONCAT('%', #{po.projectCode}, '%')
             </if>
@@ -58,7 +81,7 @@
     <select id="queryCount" resultType="long">
         SELECT COUNT(*) FROM projects
         <where>
-            deleted = false
+            delete_id = 0
             <if test="po.projectCode != null and po.projectCode != ''">
                 AND project_code LIKE CONCAT('%', #{po.projectCode}, '%')
             </if>
@@ -91,5 +114,12 @@
             </if>
         </where>
     </select>
+
+
+    <!-- **************************************************************************************** -->
+    <!-- 未整理(无用) -->
+    
+    
+
 
 </mapper>

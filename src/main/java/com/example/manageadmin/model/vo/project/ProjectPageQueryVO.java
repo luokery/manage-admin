@@ -1,24 +1,26 @@
 package com.example.manageadmin.model.vo.project;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 
-/**
- * 项目查询参数 DTO
- */
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.example.manageadmin.model.vo.SortByVO;
+import com.example.manageadmin.validation.QueryPageGroup;
+import com.example.manageadmin.validation.project.ProjectSortBy;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @Data
-@ParameterObject
-@Schema(description = "项目查询参数")
-public class ProjectQueryDTO {
-    
+@EqualsAndHashCode(callSuper=false)
+@Schema(description = "项目分页查询参数")
+@ProjectSortBy(message = "项目排序字段无效, 或不在排序字段范围.", groups = {QueryPageGroup.class})
+public class ProjectPageQueryVO extends SortByVO {
+	
     @Schema(description = "项目编号（模糊匹配）", example = "PRJ-2024")
     private String projectCode;
 
@@ -61,32 +63,6 @@ public class ProjectQueryDTO {
     @Schema(description = "关键词（同时匹配编号和名称）", example = "智慧城市")
     private String keyword;
     
-    @Schema(description = "排序字段", example = "createdAt", allowableValues = {"id", "projectCode", "projectName", "status", "startDate", "endDate", "createdAt", "updatedAt"})
-    private String sortBy = "createdAt";
-
-    @Schema(description = "排序方向", example = "DESC", allowableValues = {"ASC", "DESC"}, defaultValue = "DESC")
-    private String sortDirection = "DESC";
-
-    /**
-     * 获取排序方向（默认 DESC）
-     */
-    public String getSortDirection() {
-        if ("ASC".equalsIgnoreCase(sortDirection)) {
-            return "ASC";
-        }
-        return "DESC";
-    }
-
-    /**
-     * 获取排序字段（转换为数据库字段名）
-     */
-    public String getSortBy() {
-        if (sortBy == null || sortBy.isEmpty()) {
-            return "created_at";
-        }
-        // 转换 camelCase 到 snake_case
-        return sortBy.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
-    }
     /**
      * 验证日期范围是否有效
      */

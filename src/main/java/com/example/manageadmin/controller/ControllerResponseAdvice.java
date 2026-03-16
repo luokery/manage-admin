@@ -15,7 +15,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * 统一响应处理
+ * 统一响应处理 @FIXME: 是否需要
+ * 在控制器和统一异常处理, 只用抛出VO类型, 节省ResponseVO响应包装层
+ *  如: ResponseVO<UserVO> 改为 UserVO直接返回, 由统一响应处理拦截.
  */
 @RestControllerAdvice(basePackages = {"com.example.manageadmin.controller"})
 public class ControllerResponseAdvice implements ResponseBodyAdvice<Object> {

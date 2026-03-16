@@ -40,4 +40,7 @@ public class ProjectResponseDTO {
     
     @Schema(description = "更新时间")
     private LocalDateTime updatedAt;
+    
+    @Schema(description = "更新版本")
+    private Integer version;
 }

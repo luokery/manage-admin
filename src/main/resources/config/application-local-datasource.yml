@@ -46,3 +46,5 @@ spring:
       mode: always
       schema-locations: classpath:db/schema_h2.sql
       data-locations: classpath:db/data_h2.sql
+#      schema-locations: classpath:db/schema_h2.sql
+#      data-locations: classpath:db/data_h2.sql

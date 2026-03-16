@@ -1,10 +1,13 @@
 package com.example.manageadmin.model.po;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 
 @Data
-public class Project {
+@EqualsAndHashCode(callSuper=false)
+public class Project extends BasePO {
     private Long id;
     private String projectCode;      // 项目编号
     private String projectName;      // 项目名称
@@ -13,6 +16,4 @@ public class Project {
     private Integer status;          // 状态：1-进行中，2-已完成，0-已暂停
     private LocalDateTime startDate; // 开始日期
     private LocalDateTime endDate;   // 结束日期
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

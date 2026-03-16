@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseVO<Void> handleRuntimeException(RuntimeException e) {
-    	log.error(e.getMessage());
+    	log.error("运行异常: ", e);
         return Result.build(400, e.getMessage());
     }
     
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseVO<Void> handleException(Exception e) {
-        log.error("服务器内部错误: {}", e.getMessage());
+        log.error("服务器内部错误: ", e);
         return Result.build(500, "服务器内部错误: " + e.getMessage());
     }
 }

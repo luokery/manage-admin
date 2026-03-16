@@ -23,4 +23,7 @@ public interface ConstSysBase {
 	
 	public static final String SESSION_ID_KEY_PREFIX = "session:redis:";
 
+	public static final Integer STATUS_DALETE = 3;
+
+	
 }

@@ -330,6 +330,7 @@
                             <img id="previewImg" class="w-full h-32 object-cover rounded-lg">
                         </div>
                     </div>
+                    <input type="text" id="projectVersion" required  ><!-- hidden="hidden" -->
                 </form>
                 <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
                     <button onclick="closeProjectModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">取消</button>
@@ -535,8 +536,8 @@
                             <span>结束: ${p.endDate ? p.endDate.split('T')[0] : '-'}</span>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="openProjectEditModal(${p.id})" class="flex-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-sm">编辑</button>
-                            <button onclick="deleteProject(${p.id})" class="flex-1 px-3 py-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100 text-sm">删除</button>
+                            <button onclick="openProjectEditModal(${p.id}, ${p.version})" class="flex-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-sm">编辑</button>
+                            <button onclick="deleteProject(${p.id}, ${p.version})" class="flex-1 px-3 py-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100 text-sm">删除</button>
                         </div>
                     </div>
                 </div>
@@ -552,7 +553,7 @@
             document.getElementById('projectModal').classList.remove('hidden');
         }
 
-        async function openProjectEditModal(id) {
+        async function openProjectEditModal(id, version) {
             const p = projects.find(x => x.id === id);
             if (!p) return;
             document.getElementById('projectModalTitle').textContent = '编辑项目';
@@ -565,6 +566,8 @@
             document.getElementById('projectStatus').value = p.status;
             document.getElementById('projectStatusField').classList.remove('hidden');
             document.getElementById('imageUploadSection').classList.remove('hidden');
+            document.getElementById('projectVersion').value = p.version;
+            
             document.getElementById('projectModal').classList.remove('hidden');
         }
 
@@ -573,11 +576,13 @@
         async function saveProject() {
             const id = document.getElementById('projectId').value;
             const data = {
+            	id: document.getElementById('projectId').value,
                 projectCode: document.getElementById('projectCode').value,
                 projectName: document.getElementById('projectName').value,
                 description: document.getElementById('description').value || null,
                 startDate: document.getElementById('startDate').value ? document.getElementById('startDate').value + 'T00:00:00' : null,
-                endDate: document.getElementById('endDate').value ? document.getElementById('endDate').value + 'T23:59:59' : null
+                endDate: document.getElementById('endDate').value ? document.getElementById('endDate').value + 'T23:59:59' : null,
+                version: document.getElementById('projectVersion').value,
             };
             if (id) data.status = parseInt(document.getElementById('projectStatus').value);
             try {
@@ -607,10 +612,10 @@
             } catch (e) { showToast('上传失败', 'error'); }
         }
 
-        async function deleteProject(id) {
+        async function deleteProject(id, version) {
             if (!confirm('确定删除该项目？')) return;
             try {
-                const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                const res = await fetch(`/api/projects/${id}?version=${version}`, { method: 'DELETE' });
                 const result = await res.json();
                 if (result.code === 200) { showToast('删除成功'); loadProjects(); }
                 else showToast(result.message, 'error');

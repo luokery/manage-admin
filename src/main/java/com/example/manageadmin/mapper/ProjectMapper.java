@@ -1,13 +1,19 @@
 package com.example.manageadmin.mapper;
 
 import com.example.manageadmin.model.bo.ProjectPageBO;
-import com.example.manageadmin.model.dto.project.ProjectCreateDTO;
 import com.example.manageadmin.model.po.Page;
 import com.example.manageadmin.model.po.Project;
 import com.example.manageadmin.model.vo.PageDTO;
 import com.example.manageadmin.model.vo.PageParamVO;
 import com.example.manageadmin.model.vo.PageVO;
-import com.example.manageadmin.model.vo.project.ProjectQueryDTO;
+import com.example.manageadmin.model.vo.project.ProjectCreateVO;
+import com.example.manageadmin.model.vo.project.ProjectDeleteVO;
+import com.example.manageadmin.model.vo.project.ProjectPageQueryVO;
+import com.example.manageadmin.model.vo.project.ProjectUpdateVO;
+
+import jakarta.validation.Valid;
+
+import com.example.manageadmin.model.dto.project.ProjectDeleteDTO;
 import com.example.manageadmin.model.dto.project.ProjectResponseDTO;
 import com.example.manageadmin.model.dto.project.ProjectUpdateDTO;
 
@@ -21,13 +27,6 @@ public interface ProjectMapper {
     
 	ProjectMapper INSTANCE = Mappers.getMapper( ProjectMapper.class );
 	
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "imageUrl", ignore = true)
-    @Mapping(target = "status", constant = "1")
-    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
-    Project toEntity(ProjectCreateDTO dto);
-    
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     void updateEntityFromDTO(ProjectUpdateDTO dto, @MappingTarget Project entity);
@@ -47,11 +46,24 @@ public interface ProjectMapper {
         };
     }
 //====================================================
-	PageDTO<ProjectResponseDTO, ProjectQueryDTO> toPageDTO(PageParamVO<ProjectQueryDTO> pageParamVO);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "imageUrl", ignore = true)
+    @Mapping(target = "status", constant = "1")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    Project toEntity(ProjectCreateVO dto);
+    
+    PageDTO<ProjectResponseDTO, ProjectPageQueryVO> toPageDTO(PageParamVO<ProjectPageQueryVO> pageParamVO);
 
-	PageVO<ProjectResponseDTO> toPageVO(PageDTO<ProjectResponseDTO, ProjectQueryDTO> resultDTO);
+	PageVO<ProjectResponseDTO> toPageVO(PageDTO<ProjectResponseDTO, ProjectPageQueryVO> resultDTO);
 
-	Page toPagePO(PageDTO<ProjectResponseDTO, ProjectQueryDTO> query);
+	Page toPagePO(PageDTO<ProjectResponseDTO, ProjectPageQueryVO> query);
 
-	ProjectPageBO toPageBO(ProjectQueryDTO queryParamDTO);
+	ProjectPageBO toPageBO(ProjectPageQueryVO queryParamDTO);
+
+	ProjectDeleteDTO toDeleteDTO(ProjectDeleteVO deleteVO);
+
+	Project toEntity(ProjectDeleteDTO dto);
+
+	ProjectUpdateDTO toDTO(@Valid ProjectUpdateVO paramVO);
 }

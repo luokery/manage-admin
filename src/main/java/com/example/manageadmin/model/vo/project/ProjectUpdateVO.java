@@ -1,4 +1,4 @@
-package com.example.manageadmin.model.dto.project;
+package com.example.manageadmin.model.vo.project;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -7,10 +7,11 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 import com.example.manageadmin.validation.UpdateGroup;
+import com.example.manageadmin.validation.project.ProjectStatus;
 
 @Data
 @Schema(description = "项目更新请求")
-public class ProjectUpdateDTO {
+public class ProjectUpdateVO {
     
     @Schema(description = "项目编号", example = "PRJ-2024-001")
     @Size(max = 50, message = "项目编号最大50个字符")
@@ -26,7 +27,8 @@ public class ProjectUpdateDTO {
     @Schema(description = "项目图片URL")
     private String imageUrl;
     
-    @Schema(description = "状态：1-进行中，2-已完成，0-已暂停", example = "1", allowableValues = {"0", "1", "2"})
+    @ProjectStatus(message = "项目状态值无效，必须是 0-新建，1-待审批，2-进行中, 3-已完成", groups = {UpdateGroup.class})
+    @Schema(description = "项目状态：0-新建，1-待审批，2-进行中, 3-已完成", example = "1", allowableValues = {"0", "1", "2", "2"}, defaultValue = "1")
     private Integer status;
     
     @Schema(description = "开始日期", example = "2024-01-01T00:00:00")
@@ -35,9 +37,11 @@ public class ProjectUpdateDTO {
     @Schema(description = "结束日期", example = "2024-12-31T23:59:59")
     private LocalDateTime endDate;
     
-    @Size(max = 50, message = "项目编号最大50个字符")
+    @NotBlank(message = "项目编号不能为空", groups = {UpdateGroup.class})
     private Long id;
 
+    @NotBlank(message = "项目版本不能为空", groups = {UpdateGroup.class})
     @Schema(description = "项目版本", example = "1", defaultValue = "1")
     private Integer version;
+
 }
