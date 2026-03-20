@@ -1,4 +1,56 @@
 spring:
+  autoconfigure:
+    exclude:
+#      - org.redisson.spring.starter.RedissonAutoConfigurationV2
+#  data:
+#    redis:
+#      database: 0
+#      host: 127.0.0.1
+#      port: 6379
+#      password:
+#      ssl: JDK
+#      timeout: 5000
+#      connectTimeout: 10000
+#      clientName:
+#      cluster:
+#        nodes:
+#      sentinel:
+#        master:
+#        nodes:
+
+# Redis 配置 (当 Redis 可用时，取消 pom.xml 中 Redis 依赖的注释，并设置环境变量)${REDIS_PASSWORD:}
+#spring.data.redis:
+#  host: ${REDIS_HOST:localhost}
+#  port: ${REDIS_PORT:6379}
+#  password: 
+#  database: ${REDIS_DATABASE:0}
+#  timeout: 5000ms
+#  lettuce:
+#    pool:
+#      max-active: 20
+#      max-idle: 10
+#      min-idle: 5
+#      max-wait: 3000ms
+
+# Redisson 配置 (当 Redis 启用时生效)${REDIS_PASSWORD:}
+#spring.data.redis.redisson:
+#  config: |
+#    singleServerConfig:
+#      address: "redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}"
+#      password: ""
+#      database: ${REDIS_DATABASE:0}
+#      connectionPoolSize: 20
+#      connectionMinimumIdleSize: 5
+#      idleConnectionTimeout: 10000
+#      connectTimeout: 10000
+#      timeout: 3000
+#      retryAttempts: 3
+#      retryInterval: 1500
+#    threads: 4
+#    nettyThreads: 4
+#    codec: !<org.redisson.codec.JsonJacksonCodec> {}
+--- 
+spring:
   data:
     # 系统缓存Redis配置(这里的Redis配置主要用于鉴权认证等模板自带服务的系统缓存服务，要求Redis版本在7.0以上)
     redis:

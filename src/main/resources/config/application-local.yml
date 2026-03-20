@@ -5,7 +5,7 @@ spring:
       on-profile:
         - local
     import:
-      #- application-local-actuator.yml
+      - application-local-actuator.yml
       #- application-local-auth.yml
       - application-local-data.yml
       - application-local-datasource.yml

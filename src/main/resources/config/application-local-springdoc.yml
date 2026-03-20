@@ -1,7 +1,57 @@
+# SpringDoc OpenAPI 配置
 springdoc:
+  version: '@springdoc.version@'
   api-docs:
-    # springdoc api文档访问控制
     enabled: true
+    path: /v3/api-docs
   swagger-ui:
-    # swagger-ui文档访问控制
     enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  security-schemes:
+    name: bearer-key
+  group-configs:
+    - group: "all service"
+      displayName: 全部服务 API
+      paths-to-match: "/**"
+      packages-to-scan:
+        - com.example.manageadmin.controller
+    - group: 'Auth API'
+      displayName: 认证管理 API
+      paths-to-match: '/api/auth/**'
+      packages-to-scan: com.example.manageadmin.controller
+    - group: 'Cache API'
+      displayName: 缓存管理 API
+      paths-to-match: '/api/cache/**'
+      packages-to-scan: com.example.manageadmin.controller
+    - group: 'User API'
+      displayName: 用户管理 API
+      paths-to-match: '/api/users/**'
+      packages-to-scan: com.example.manageadmin.controller
+    - group: 'project API'
+      displayName: 项目管理 API
+      paths-to-match: '/api/projects/**'
+      packages-to-scan: com.example.manageadmin.controller
+  # 自定义OpenAPI文档信息
+  openapi:
+    info:
+      title: "测试项目系统API1"  # 文档标题
+      description: | # 文档描述
+        基于 Spring Boot + MyBatis + MapStruct 的API文档示例 RESTful API 文档
+        ## 认证说明
+        - 大部分接口需要 JWT Token 认证
+        - 请先调用 `/api/auth/login` 或 `/api/auth/register` 获取 Token 
+        - 在 Swagger UI 中点击右上角 'Authorize' 按钮，输入 `Bearer <your_token>` 进行认证
+      version: "1.0.0"  # 版本号
+      contact:  # 联系人信息
+        name: "开发团队"
+        email: "dev@example.com"
+      license: 
+        name: MIT License
+        url: https://choosealicense.com/licenses/mit/
+    servers:  # 接口服务器地址(可选，默认使用当前服务地址)
+      - url: "http://localhost:${server.port:8081}" # https://{domain}.localhost.com:{port}/api/{basePath}
+        description: "开发环境"
+      - url: https://bac27a6b-3c46-4dc1-a6c1-0f6dd5593bd0.dev.coze.site
+        description: "生产环境"
