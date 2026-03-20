@@ -1,3 +1,4 @@
+TRUNCATE `users`;
 -- 初始化示例数据
 -- 默认密码: 123456 (BCrypt加密)
 -- 密码哈希: $2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi
@@ -9,6 +10,7 @@ INSERT INTO users (username, password, email, phone, age, role, status, version,
 ('赵六', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', 'zhaoliu@example.com', '13800138004', 22, 'user', 1, 1, 0),
 ('钱七', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', 'qianqi@example.com', '13800138005', 35, 'user', 0, 1, 0);
 
+TRUNCATE `projects`;
 -- 初始化项目示例数据
 INSERT INTO projects (project_code, project_name, description, status, start_date, end_date, version, delete_id) VALUES
 ('PRJ-2024-001', '智慧城市建设项目', '打造智能化城市管理系统，包括交通监控、环境监测、公共安全等子系统', 1, '2024-01-01 00:00:00', '2024-12-31 23:59:59', 1, 0),

@@ -1,33 +1,34 @@
-DROP TABLE IF EXISTS users ;
--- 用户表结构
+--DROP TABLE IF EXISTS users ;
+-- 用户表结构 (MySQL)
 CREATE TABLE IF NOT EXISTS users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL DEFAULT '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi',
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone VARCHAR(20),
-    age INT,
-    role VARCHAR(20) DEFAULT 'user',
-    status INT DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    version INT DEFAULT 1,
-    delete_id BIGINT DEFAULT 0
-);
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '用户ID',
+    username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+    password VARCHAR(100) NOT NULL DEFAULT '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi' COMMENT '密码',
+    email VARCHAR(100) NOT NULL UNIQUE COMMENT '邮箱',
+    phone VARCHAR(20) COMMENT '手机号',
+    age INT COMMENT '年龄',
+    role VARCHAR(20) DEFAULT 'user' COMMENT '角色',
+    status INT DEFAULT 1 COMMENT '状态: 1-正常, 0-禁用',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    version INT DEFAULT 1 COMMENT '版本号(乐观锁)',
+    delete_id BIGINT DEFAULT 0 COMMENT '逻辑删除标记'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
 
-DROP TABLE IF EXISTS PROJECTS ;
--- 项目表结构
+--DROP TABLE IF EXISTS PROJECTS ;
+-- 项目表结构 (MySQL)
 CREATE TABLE IF NOT EXISTS projects (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    project_code VARCHAR(50) NOT NULL UNIQUE,
-    project_name VARCHAR(100) NOT NULL,
-    description TEXT,
-    image_url VARCHAR(500),
-    status INT DEFAULT 1,
-    start_date TIMESTAMP,
-    end_date TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    version INT DEFAULT 1,
-    delete_id BIGINT DEFAULT 0
-);
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '项目ID',
+    project_code VARCHAR(50) NOT NULL UNIQUE COMMENT '项目编号',
+    project_name VARCHAR(100) NOT NULL COMMENT '项目名称',
+    description TEXT COMMENT '项目描述',
+    image_url VARCHAR(500) COMMENT '项目图片URL',
+    status INT DEFAULT 1 COMMENT '状态: 0-已暂停, 1-进行中, 2-已完成',
+    start_date DATETIME COMMENT '开始日期',
+    end_date DATETIME COMMENT '结束日期',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    version INT DEFAULT 1 COMMENT '版本号(乐观锁)',
+    delete_id BIGINT DEFAULT 0 COMMENT '逻辑删除标记'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='项目表';
+

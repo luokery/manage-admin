@@ -29,6 +29,8 @@
         <druid.version>1.2.27</druid.version>
         <springdoc.version>2.8.16</springdoc.version>
         <redisson.version>3.25.2</redisson.version>
+        
+        <mysql.version>8.0.33</mysql.version>
     </properties>
     
     <dependencies>
@@ -122,10 +124,16 @@
             <version>${mapstruct.version}</version>
         </dependency>
         
-        <!-- H2 Database (内存数据库) -->
+        <!-- H2 Database (内存数据库) 
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>-->
+        <!-- MySQL 数据库驱动 8.0.33 <version>${mysql.version}</version> -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
         
