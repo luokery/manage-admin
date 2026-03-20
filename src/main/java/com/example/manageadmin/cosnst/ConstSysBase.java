@@ -25,5 +25,6 @@ public interface ConstSysBase {
 
 	public static final Integer STATUS_DALETE = 3;
 
+	public static final String BUSINESS_LOCKKEY_project_create = "project:create";
 	
 }

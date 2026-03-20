@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- 项目表结构 (MySQL)
 CREATE TABLE IF NOT EXISTS projects (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '项目ID',
-    project_code VARCHAR(50) NOT NULL UNIQUE COMMENT '项目编号',
+    project_code VARCHAR(50) NOT NULL COMMENT '项目编号',
     project_name VARCHAR(100) NOT NULL COMMENT '项目名称',
     description TEXT COMMENT '项目描述',
     image_url VARCHAR(500) COMMENT '项目图片URL',
@@ -31,4 +31,7 @@ CREATE TABLE IF NOT EXISTS projects (
     version INT DEFAULT 1 COMMENT '版本号(乐观锁)',
     delete_id BIGINT DEFAULT 0 COMMENT '逻辑删除标记'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='项目表';
-
+--ALTER TABLE projects
+--DROP CONSTRAINT unique_project_code_delete;
+--ALTER TABLE projects
+--ADD CONSTRAINT unique_project_code_delete UNIQUE (project_code, delete_id);

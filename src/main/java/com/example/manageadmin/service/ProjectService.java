@@ -15,15 +15,23 @@ import com.example.manageadmin.repository.ProjectRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 项目服务
@@ -38,6 +46,11 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     
+	// 分布式锁服务
+    private final Optional<DistributedLockService> distributedLockService;
+    
+    // 分布式锁
+    private final RedissonClient redissonClient;
     /**
      * ****************************************************************************************
      * 创建
@@ -47,23 +60,55 @@ public class ProjectService {
      * 创建项目
      * 清除项目列表缓存
      */
+    /**
+     * @param dto
+     * @return
+     */
     @Transactional
     @Caching(evict = {
             @CacheEvict(key = "'all'"),
             @CacheEvict(key = "'status:' + #dto.status", condition = "#dto.status != null")
     })
     public ProjectResponseDTO createProject(ProjectCreateVO dto) {
-        log.debug("创建项目: {}", dto.getProjectCode());
-        
-        // 检查项目编号是否已存在
-        if (projectRepository.findByProjectCode(dto.getProjectCode()).isPresent()) {
-            throw new RuntimeException("项目编号已存在: " + dto.getProjectCode());
-        }
+        log.debug("创建项目: {}", dto);
         
         Project project = projectMapper.toEntity(dto);
-        projectRepository.insert(project);
-        ProjectResponseDTO projectResponseDTO = projectMapper.toResponseDTO(project);
-        return projectResponseDTO;
+        
+        RLock lock = redissonClient.getLock(ConstSysBase.BUSINESS_LOCKKEY_project_create);
+        try {
+            boolean acquired = lock.tryLock(5, 10, TimeUnit.SECONDS);
+            if (!acquired) {
+                log.warn("获取锁超时: {}", ConstSysBase.BUSINESS_LOCKKEY_project_create);
+                throw new RuntimeException("获取锁超时，请稍后重试");
+            }
+            log.debug("成功获取锁: {}", ConstSysBase.BUSINESS_LOCKKEY_project_create);
+            
+            // 生成或标准化项目编号
+            // 自动生成项目编号（带重试机制防止并发冲突）
+            // 自动生成项目编号（使用分布式锁保证并发安全）
+            String projectCode = generateProjectCodeSafelyWithRetry();
+            project.setProjectCode(projectCode);
+            
+            log.debug("创建项目，请求编号: {}", projectCode);
+            
+            // 检查项目编号是否已存在（排除已删除的）
+            if (projectRepository.findByProjectCode(projectCode).isPresent()) {
+                throw new RuntimeException("项目编号已存在: " + projectCode);
+            }
+            
+            projectRepository.insert(project);
+            ProjectResponseDTO projectResponseDTO = projectMapper.toResponseDTO(project);
+            return projectResponseDTO;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("获取锁被中断: {}", ConstSysBase.BUSINESS_LOCKKEY_project_create, e);
+            throw new RuntimeException("获取锁被中断", e);
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+                log.debug("释放锁: {}", ConstSysBase.BUSINESS_LOCKKEY_project_create);
+            }
+        }
     }
     /**
      * ****************************************************************************************
@@ -236,5 +281,73 @@ public class ProjectService {
     public long getProjectCountByStatus(Integer status) {
         log.debug("统计状态 {} 的项目数量", status);
         return projectRepository.countByStatus(status);
+    }
+    
+	private StringRedisTemplate stringRedisTemplate;
+	
+	private RedisTemplate<String, Object> redisTemplate;
+	
+    /**
+     * 安全生成项目编号
+     * 优先使用分布式锁，Redis 不可用时回退到重试机制
+     */
+    private String generateProjectCodeSafelyWithRetry() {
+    	
+        // 尝试使用分布式锁
+        if (distributedLockService.isPresent()) {
+            log.debug("使用分布式锁生成项目编号");
+            return distributedLockService.get().tryLockAndExecute(
+                    "project:code:generate",
+                    5,  // 等待 5 秒
+                    10, // 持有锁 10 秒
+                    TimeUnit.SECONDS,
+                    this::generateProjectCode
+            );
+        }
+        
+        // Redis 不可用，使用重试机制
+        log.debug("Redis 不可用，使用重试机制生成项目编号");
+        return generateProjectCodeWithRetry();
+    }
+    
+    /**
+     * 生成项目编号（带重试机制）
+     * 防止并发场景下的编号冲突
+     */
+    private String generateProjectCodeWithRetry() {
+        int maxRetries = 5;
+        for (int i = 0; i < maxRetries; i++) {
+            String projectCode = generateProjectCode();
+            // 检查是否已存在
+            if (projectRepository.findByProjectCode(projectCode).isEmpty()) {
+                return projectCode;
+            }
+            log.debug("项目编号 {} 已存在，重试生成 (第{}次)", projectCode, i + 1);
+        }
+        throw new IllegalStateException("无法生成唯一的项目编号，请稍后重试");
+    }
+
+    /**
+     * 生成项目编号
+     * 格式：PRJ-YYYY-NNN
+     * 例如：PRJ-2024-001
+     */
+    private String generateProjectCode() {
+    	LocalDate currentDate= LocalDate.now();
+        String currentYear = String.valueOf( currentDate.getYear());
+        String currentMonth = String.format("%02d", currentDate.getMonthValue());
+        String currentDay = String.format("%02d", currentDate.getDayOfMonth());
+        Integer maxSequence = projectRepository.findMaxSequenceByYear(currentYear, currentMonth, currentDay);
+        
+        int nextSequence = (maxSequence == null) ? 1 : maxSequence + 1;
+        
+        // 序号最大为 999，超过则抛出异常
+        if (nextSequence > 999) {
+            throw new IllegalStateException("当年项目序号已用尽，无法生成新的项目编号");
+        }
+        
+        String projectCode = String.format("PRJ-%s-%s-%s-%03d", currentYear, currentMonth, currentDay, nextSequence);
+        log.debug("自动生成项目编号: {}", projectCode);
+        return projectCode;
     }
 }

@@ -49,6 +49,8 @@ public interface ProjectMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "imageUrl", ignore = true)
     @Mapping(target = "status", constant = "1")
+    @Mapping(target = "version", constant = "1")
+    @Mapping(target = "deleteId", constant = "0l")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     Project toEntity(ProjectCreateVO dto);

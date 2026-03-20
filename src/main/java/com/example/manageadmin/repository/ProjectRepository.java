@@ -15,7 +15,7 @@ public interface ProjectRepository extends BaseRepository<Project>{
      * 创建
      */
 	// 初始化version=1, delete_id=0
-    @Insert("INSERT INTO projects (project_code, project_name, description, image_url, status, start_date, end_date, created_at, updated_at, version, delete_id) " +
+    @Insert("INSERT INTO projects (project_code, project_name, description, image_url, status, start_date, end_date, version, delete_id, created_at, updated_at) " +
             "VALUES (#{projectCode}, #{projectName}, #{description}, #{imageUrl}, #{status}, #{startDate}, #{endDate}" 
             + ", #{version}, #{deleteId}" 
             + ", #{createdAt}, #{updatedAt})")
@@ -45,6 +45,21 @@ public interface ProjectRepository extends BaseRepository<Project>{
      * ****************************************************************************************
      * 查询
      */
+    
+    /**
+     * 获取指定年份的最大项目序号
+     * 项目编号格式：PRJ-YYYY-NNN (长度12)
+     * 序号位置：第10-12个字符
+     * @param year 年份，如 2024
+     * @return 最大序号，如没有返回 null
+     */
+    @Select("SELECT MAX(CAST(SUBSTRING(project_code, 16, 3) AS UNSIGNED)) " +
+            "FROM projects " +
+            "WHERE project_code LIKE CONCAT('PRJ-', #{year}, '-', #{month}, '-', #{day}, '-%') " +
+            "AND delete_id = 0 " +
+            "AND LENGTH(project_code) = 18")
+    Integer findMaxSequenceByYear(@Param("year") String year, @Param("month") String month, @Param("day") String day);
+    
     
     /**
      * ****************************************************************************************

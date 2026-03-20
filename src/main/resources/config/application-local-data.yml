@@ -2,8 +2,10 @@ spring:
   data:
     # 系统缓存Redis配置(这里的Redis配置主要用于鉴权认证等模板自带服务的系统缓存服务，要求Redis版本在7.0以上)
     redis:
+      # 是否开启redis分布式锁
+      enabled: true
       # 单机地址(单价模式配置和集群模式配置只能存在一个)
-      host: 127.0.0.1
+      host: localhost
       # 单机端口，默认为6379
       port: 6379
       # 集群地址(单价模式配置和集群模式配置只能存在一个)
@@ -17,7 +19,7 @@ spring:
       # 密码(考虑是否需要密码)
       password: 123456
       # 连接超时时间
-      timeout: 3s
+      timeout: 3000ms
       # Whether to enable SSL support.
       ssl: 
         enabled: false
@@ -42,7 +44,7 @@ spring:
     # 如果同时开启单机版本和集群版本，只有单机版本生效
     redisson:
       # 集群模式:SINGLE(单例),SENTINEL(哨兵),MASTERSLAVE(主从),CLUSTER(集群),REPLICATED(云托管)
-      mode: CLUSTER
+      mode: SINGLE
       # 线程池数量
       threads: 4
       # Netty线程池数量

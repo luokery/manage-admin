@@ -14,6 +14,7 @@ import java.util.function.Supplier;
  * 分布式锁服务
  * 基于 Redisson 实现分布式锁功能
  * 仅在 Redis 启用时生效 (spring.data.redis.enabled=true)
+ * 用来快捷执行任务, 注意任务范围.
  */
 @Slf4j
 @Service
@@ -54,6 +55,32 @@ public class DistributedLockService {
                 log.debug("释放锁: {}", lockKey);
             }
         }
+    }
+    
+    /**
+     * 尝试获取锁并执行任务: 时间单位毫秒
+     * @param <T>
+     * @param lockKey
+     * @param waitTime
+     * @param leaseTime
+     * @param supplier
+     * @return
+     */
+    public <T> T tryLockAndExecuteByMseconds(String lockKey, long waitTime, long leaseTime, Supplier<T> supplier) {
+    	return tryLockAndExecute(lockKey, waitTime, leaseTime, TimeUnit.MILLISECONDS, supplier);
+    }
+    
+    /**
+     * 尝试获取锁并执行任务: 时间单位秒
+     * @param <T>
+     * @param lockKey
+     * @param waitTime
+     * @param leaseTime
+     * @param supplier
+     * @return
+     */
+    public <T> T tryLockAndExecuteBySeconds(String lockKey, long waitTime, long leaseTime, Supplier<T> supplier) {
+    	return tryLockAndExecute(lockKey, waitTime, leaseTime, TimeUnit.SECONDS, supplier);
     }
     
     /**

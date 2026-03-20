@@ -28,13 +28,13 @@
         <mybatis-spring-boot.version>3.0.3</mybatis-spring-boot.version>
         <druid.version>1.2.27</druid.version>
         <springdoc.version>2.8.16</springdoc.version>
-        <redisson.version>3.25.2</redisson.version>
+        <redisson.version>3.26.0</redisson.version>
         
         <mysql.version>8.0.33</mysql.version>
     </properties>
     
     <dependencies>
-        <!-- Spring Boot Starters (排除默认 Logback) -->
+        <!-- Spring Boot Starters (排除默认 Logback) 3.25.2-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -82,20 +82,20 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
         
-        <!-- Redis - 当 Redis 可用时取消注释
+        <!-- Redis - 当 Redis 可用时取消注释-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        -->
         
-        <!-- Redisson 分布式锁 - 当 Redis 可用时取消注释
+        
+        <!-- Redisson 分布式锁 - 当 Redis 可用时取消注释-->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
             <version>${redisson.version}</version>
         </dependency>
-        -->
+        
         
         <!-- Caffeine 本地缓存 -->
         <dependency>
