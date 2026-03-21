@@ -3,15 +3,15 @@ spring:
     exclude:
 #      - org.redisson.spring.starter.RedissonAutoConfigurationV2
 #  data:
-#    redis:
-#      database: 0
-#      host: 127.0.0.1
-#      port: 6379
-#      password:
-#      ssl: JDK
-#      timeout: 5000
-#      connectTimeout: 10000
-#      clientName:
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+#    ssl: 
+    timeout: 5000
+    connectTimeout: 10000
+    clientName:
 #      cluster:
 #        nodes:
 #      sentinel:

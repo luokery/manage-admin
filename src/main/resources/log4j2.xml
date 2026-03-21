@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
     <Properties>
-        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%highlight{%5p}] [%style{%t}{cyan}] [%style{%c{1.}}{magenta}]: %msg%n%throwable</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%highlight{%5p}] [%style{%t}{cyan}] [%X{SERIAL_NUMBER_TRACE_ID}] [%style{%c{1.}}{magenta}]: %msg%n%throwable</Property>
         <Property name="LOG_PATH">/app/work/logs/bypass</Property>
     </Properties>
     
@@ -14,7 +14,7 @@
         <!-- 文件输出 - 所有日志 -->
         <RollingFile name="FileAppender" fileName="${LOG_PATH}/app.log"
                      filePattern="${LOG_PATH}/app-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] [%t] [%c{1.}]: %msg%n%throwable"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] [%t] [%X{SERIAL_NUMBER_TRACE_ID}] [%c{1.}]: %msg%n%throwable"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="10MB"/>
@@ -25,7 +25,7 @@
         <!-- 文件输出 - 错误日志 -->
         <RollingFile name="ErrorAppender" fileName="${LOG_PATH}/error.log"
                      filePattern="${LOG_PATH}/error-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] [%t] [%c{1.}]: %msg%n%throwable"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] [%t] [%X{SERIAL_NUMBER_TRACE_ID}] [%c{1.}]: %msg%n%throwable"/>
             <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>

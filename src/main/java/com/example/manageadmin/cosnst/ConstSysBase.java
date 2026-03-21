@@ -14,7 +14,7 @@ public interface ConstSysBase {
 	/**
 	 * 日志流水号
 	 */
-	public static final String SERIAL_NUMBER_KEY = "serial_Number_trace_Id";
+	public static final String SERIAL_NUMBER_KEY = "SERIAL_NUMBER_TRACE_ID";
 	
 	/**
 	 * 验证码存活时间

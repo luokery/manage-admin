@@ -68,7 +68,6 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "参数验证失败或项目编号已存在")
     })
     @PostMapping
-    @Transactional(rollbackFor = Exception.class)
     public ResponseVO<ProjectResponseDTO> createProject(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "项目创建信息", required = true)
             @Validated(AddGroup.class) @RequestBody ProjectCreateVO createDTO) {

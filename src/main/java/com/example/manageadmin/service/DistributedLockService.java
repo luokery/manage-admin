@@ -15,6 +15,22 @@ import java.util.function.Supplier;
  * 基于 Redisson 实现分布式锁功能
  * 仅在 Redis 启用时生效 (spring.data.redis.enabled=true)
  * 用来快捷执行任务, 注意任务范围.
+ * 
+ */
+/**
+// 分布式锁服务
+private final java.util.Optional<DistributedLockService> distributedLockService;
+    // 尝试使用分布式锁
+    if (distributedLockService.isPresent()) {
+        log.debug("使用分布式锁生成项目编号");
+        return distributedLockService.get().tryLockAndExecute(
+                "project:code:generate",
+                5,  // 等待 5 秒
+                10, // 持有锁 10 秒
+                TimeUnit.SECONDS,
+                this::generateProjectCode
+        );
+    }
  */
 @Slf4j
 @Service
@@ -56,7 +72,7 @@ public class DistributedLockService {
             }
         }
     }
-    
+
     /**
      * 尝试获取锁并执行任务: 时间单位毫秒
      * @param <T>

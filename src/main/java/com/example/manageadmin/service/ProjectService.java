@@ -16,6 +16,7 @@ import com.example.manageadmin.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheConfig;
@@ -27,10 +28,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,9 +46,6 @@ public class ProjectService {
     
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
-    
-	// 分布式锁服务
-    private final Optional<DistributedLockService> distributedLockService;
     
     // 分布式锁
     private final RedissonClient redissonClient;
@@ -64,7 +62,7 @@ public class ProjectService {
      * @param dto
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Caching(evict = {
             @CacheEvict(key = "'all'"),
             @CacheEvict(key = "'status:' + #dto.status", condition = "#dto.status != null")
@@ -74,7 +72,7 @@ public class ProjectService {
         
         Project project = projectMapper.toEntity(dto);
         
-        RLock lock = redissonClient.getLock(ConstSysBase.BUSINESS_LOCKKEY_project_create);
+        RLock lock = redissonClient.getLock( ConstSysBase.BUSINESS_LOCKKEY_project_create);
         try {
             boolean acquired = lock.tryLock(5, 10, TimeUnit.SECONDS);
             if (!acquired) {
@@ -85,8 +83,7 @@ public class ProjectService {
             
             // 生成或标准化项目编号
             // 自动生成项目编号（带重试机制防止并发冲突）
-            // 自动生成项目编号（使用分布式锁保证并发安全）
-            String projectCode = generateProjectCodeSafelyWithRetry();
+            String projectCode = generateProjectCodeWithRetry();
             project.setProjectCode(projectCode);
             
             log.debug("创建项目，请求编号: {}", projectCode);
@@ -119,7 +116,7 @@ public class ProjectService {
      * 删除项目
      * 清除该项目的缓存和列表缓存
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(allEntries = true)
     public void deleteProject(ProjectDeleteDTO dto) {
         log.debug("删除项目: {}", dto);
@@ -142,7 +139,7 @@ public class ProjectService {
      * 更新项目
      * 清除该项目的缓存和列表缓存
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(allEntries = true)
     public ProjectResponseDTO updateProject(ProjectUpdateDTO dto) {
         log.debug("更新项目: {}", dto);
@@ -169,7 +166,7 @@ public class ProjectService {
      * 更新项目图片
      * 清除该项目的缓存
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#id")
     public ProjectResponseDTO updateProjectImage(Long id, String imageUrl) {
         log.debug("更新项目图片: {}", id);
@@ -286,29 +283,6 @@ public class ProjectService {
 	private StringRedisTemplate stringRedisTemplate;
 	
 	private RedisTemplate<String, Object> redisTemplate;
-	
-    /**
-     * 安全生成项目编号
-     * 优先使用分布式锁，Redis 不可用时回退到重试机制
-     */
-    private String generateProjectCodeSafelyWithRetry() {
-    	
-        // 尝试使用分布式锁
-        if (distributedLockService.isPresent()) {
-            log.debug("使用分布式锁生成项目编号");
-            return distributedLockService.get().tryLockAndExecute(
-                    "project:code:generate",
-                    5,  // 等待 5 秒
-                    10, // 持有锁 10 秒
-                    TimeUnit.SECONDS,
-                    this::generateProjectCode
-            );
-        }
-        
-        // Redis 不可用，使用重试机制
-        log.debug("Redis 不可用，使用重试机制生成项目编号");
-        return generateProjectCodeWithRetry();
-    }
     
     /**
      * 生成项目编号（带重试机制）
@@ -316,13 +290,25 @@ public class ProjectService {
      */
     private String generateProjectCodeWithRetry() {
         int maxRetries = 5;
+        
+//        redisTemplate.hasKey("111");
+//        stringRedisTemplate.expire("1", Duration.ofMillis(5000l));
         for (int i = 0; i < maxRetries; i++) {
             String projectCode = generateProjectCode();
-            // 检查是否已存在
-            if (projectRepository.findByProjectCode(projectCode).isEmpty()) {
-                return projectCode;
-            }
+//            // 检查是否已存在
+//            if (projectRepository.findByProjectCode(projectCode).isEmpty()) {
+//                return projectCode;
+//            }
+            if (StringUtils.isNotBlank(projectCode)) {
+            	return projectCode;
+          	}
             log.debug("项目编号 {} 已存在，重试生成 (第{}次)", projectCode, i + 1);
+            try {
+            	Thread.sleep(200l);
+            } catch (InterruptedException ie) {
+            	log.error("项目编号 {} 已存在，重试生成 异常{}", ie);
+                Thread.currentThread().interrupt();
+            }
         }
         throw new IllegalStateException("无法生成唯一的项目编号，请稍后重试");
     }
