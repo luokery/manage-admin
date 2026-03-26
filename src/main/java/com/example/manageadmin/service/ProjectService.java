@@ -28,7 +28,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,6 +48,10 @@ public class ProjectService {
     
     // 分布式锁
     private final RedissonClient redissonClient;
+    
+	private final StringRedisTemplate stringRedisTemplate;
+	
+	private final RedisTemplate<String, Object> redisTemplate;
     /**
      * ****************************************************************************************
      * 创建
@@ -280,9 +283,7 @@ public class ProjectService {
         return projectRepository.countByStatus(status);
     }
     
-	private StringRedisTemplate stringRedisTemplate;
-	
-	private RedisTemplate<String, Object> redisTemplate;
+
     
     /**
      * 生成项目编号（带重试机制）
@@ -290,9 +291,7 @@ public class ProjectService {
      */
     private String generateProjectCodeWithRetry() {
         int maxRetries = 5;
-        
-//        redisTemplate.hasKey("111");
-//        stringRedisTemplate.expire("1", Duration.ofMillis(5000l));
+
         for (int i = 0; i < maxRetries; i++) {
             String projectCode = generateProjectCode();
 //            // 检查是否已存在
