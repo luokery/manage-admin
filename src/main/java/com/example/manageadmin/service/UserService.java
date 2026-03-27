@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class UserService {
     
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
     /**
      * 获取所有用户列表
@@ -78,8 +80,18 @@ public class UserService {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("邮箱已被注册: " + dto.getEmail());
         }
-        
+
         User user = userMapper.toEntity(dto);
+        
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        // FIXME: debug情况下打印
+        log.debug("注册用户: {}, 原始密码: {}, 加密后密码: {}", dto.getUsername(), dto.getPassword(), encodedPassword);
+        user.setPassword(encodedPassword);
+        user.setRole("user"); // 默认角色
+        user.setStatus(1); // 默认状态为启用
+        user.setCreatedAt(java.time.LocalDateTime.now());
+        user.setUpdatedAt(java.time.LocalDateTime.now());
+        
         userRepository.insert(user);
         return userMapper.toResponseDTO(user);
     }
@@ -144,5 +156,15 @@ public class UserService {
     public long getUserCount() {
         log.debug("统计用户数量");
         return userRepository.count();
+    }
+
+    
+    /**
+     * 根据用户名查找用户（用于认证）
+     * 不缓存，每次都从数据库获取最新数据
+     */
+    public User findByUsername(String username) {
+        log.debug("根据用户名查找用户: {}", username);
+        return userRepository.findByUsername(username).orElse(null);
     }
 }

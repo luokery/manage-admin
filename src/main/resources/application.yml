@@ -46,7 +46,7 @@ logging:
 # 文件上传配置
 file:
   # 基础上传目录
-  upload-dir: /tmp/uploads
+  upload-dir: c:/tmp/uploads
   upload-url: /uploads
   ## 公开文件目录（可直接访问）
   public-dir: ${file.upload-dir}/public

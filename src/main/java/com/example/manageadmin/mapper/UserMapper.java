@@ -1,6 +1,7 @@
 package com.example.manageadmin.mapper;
 
 import com.example.manageadmin.model.po.User;
+import com.example.manageadmin.model.dto.auth.RegisterDTO;
 import com.example.manageadmin.model.dto.user.UserCreateDTO;
 import com.example.manageadmin.model.dto.user.UserResponseDTO;
 import com.example.manageadmin.model.dto.user.UserUpdateDTO;
@@ -24,4 +25,9 @@ public interface UserMapper {
     UserResponseDTO toResponseDTO(User entity);
     
     List<UserResponseDTO> toResponseDTOList(List<User> entities);
+    
+	//====================================================
+	UserCreateDTO toUserCreateDTO(RegisterDTO registerDTO);
+
+	UserResponseDTO toResponseDTO(UserCreateDTO userDTO);
 }

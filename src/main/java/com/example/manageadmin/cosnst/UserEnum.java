@@ -1,9 +1,7 @@
-package com.example.manageadmin.model.vo.user;
+package com.example.manageadmin.cosnst;
 
 import java.text.MessageFormat;
 
-import com.example.manageadmin.model.vo.ResultEnum;
-import com.example.manageadmin.model.vo.ResultFace;
 
 /**
  * 用户异常

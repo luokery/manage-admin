@@ -1,7 +1,6 @@
 package com.example.manageadmin.interceptors;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 
@@ -11,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
 import com.example.manageadmin.cosnst.ConstSysBase;
 

@@ -1,4 +1,4 @@
-package com.example.manageadmin.model.vo;
+package com.example.manageadmin.cosnst;
 
 import java.text.MessageFormat;
 

@@ -1,5 +1,6 @@
 package com.example.manageadmin.controller;
 
+import com.example.manageadmin.cosnst.ProjectEnum;
 import com.example.manageadmin.mapper.ProjectMapper;
 import com.example.manageadmin.model.dto.project.ProjectDeleteDTO;
 import com.example.manageadmin.model.dto.project.ProjectResponseDTO;
@@ -11,7 +12,6 @@ import com.example.manageadmin.model.vo.ResponseVO;
 import com.example.manageadmin.model.vo.Result;
 import com.example.manageadmin.model.vo.project.ProjectCreateVO;
 import com.example.manageadmin.model.vo.project.ProjectDeleteVO;
-import com.example.manageadmin.model.vo.project.ProjectEnum;
 import com.example.manageadmin.model.vo.project.ProjectPageQueryVO;
 import com.example.manageadmin.model.vo.project.ProjectUpdateVO;
 import com.example.manageadmin.service.ProjectService;
@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

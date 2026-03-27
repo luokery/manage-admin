@@ -12,3 +12,89 @@ shiro:
   web:
     enabled: true
   loginUrl: /api/auth/login
+  
+# 不需要认证的路径
+jwt-properties:
+  login-url: /api/auth/login
+  unauthorized-url: /api/auth/unauthorized
+  exclude-paths:
+    - /api/auth/login
+    - /api/auth/register
+    - /api/auth/refresh
+    - /swagger-ui/**
+    - /swagger-ui.html
+    - /v3/api-docs/**
+    - /webjars/**
+    - /druid/**
+    - /h2/**
+    - /actuator/**
+    - /actuator
+    - /uploads/public/**
+    - /uploads/projects/**
+    - /api/files/upload/image/public
+    - /static/**
+    - /*.html
+    - /*.css
+    - /*.js
+    - /favicon.ico
+    - /
+  # 公开接口 - 不需要认证
+  filter-chain-public:
+    - path: /api/auth/login
+      delimited: anon
+    - path: /api/auth/register
+      delimited: anon
+    - path: /api/auth/refresh
+      delimited: anon
+      # 公开文件访问 - 不需要认证
+    - path: /uploads/public/**
+      delimited: anon
+      # 文件上传相关 - 公开文件上传接口不需要认证
+    - path: /api/files/upload/image/public
+      delimited: anon
+  # 静态资源 - 不需要认证 filter-chain-static-resources:
+    - path: /static/**
+      delimited: anon
+    - path: /*.html
+      delimited: anon
+    - path: /*.css
+      delimited: anon
+    - path: /*.js
+      delimited: anon
+    - path: /*.ico
+      delimited: anon
+    - path: /
+      delimited: anon
+  # 组件-公共 - 不需要认证 filter-chain-component-public: 
+    # Swagger 和 API 文档 - 不需要认证
+    - path: /swagger-ui/**
+      delimited: anon
+    - path: /swagger-ui.html
+      delimited: anon
+    - path: /v3/api-docs/**
+      delimited: anon
+    - path: /webjars/**
+      delimited: anon
+    # Druid 监控 - 不需要认证（生产环境建议加上认证）
+    - path: /druid/**
+      delimited: anon
+    # H2 控制台 - 不需要认证
+    - path: /h2/** 
+      delimited: anon
+    # Spring Boot Actuator 端点 - 不需要认证（生产环境建议加上认证）
+    - path: /actuator/** 
+      delimited: anon
+    - path: /actuator
+      delimited: anon
+  # 需要认证
+  filter-chain-required:
+    # 项目图片访问接口 - 需要认证（通过 API 接口访问）
+    - path: /api/files/projects/**
+      delimited: jwt
+    # 其他所有请求都需要 JWT 认证
+    - path: /**
+      delimited: jwt
+    # H2 控制台 - 不需要认证
+    - path: /h2/** 
+      delimited: anon
+

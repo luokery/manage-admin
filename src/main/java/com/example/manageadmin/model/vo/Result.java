@@ -3,6 +3,8 @@ package com.example.manageadmin.model.vo;
 import org.slf4j.MDC;
 
 import com.example.manageadmin.cosnst.ConstSysBase;
+import com.example.manageadmin.cosnst.ResultEnum;
+import com.example.manageadmin.cosnst.ResultFace;
 
 /**
  * 结果自定义构建工具

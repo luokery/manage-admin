@@ -35,3 +35,22 @@ CREATE TABLE IF NOT EXISTS projects (
 --DROP CONSTRAINT unique_project_code_delete;
 --ALTER TABLE projects
 --ADD CONSTRAINT unique_project_code_delete UNIQUE (project_code, delete_id);
+
+CREATE TABLE IF NOT EXISTS file_info (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    original_filename VARCHAR(255) NOT NULL,
+    stored_filename VARCHAR(255) NOT NULL UNIQUE,
+    file_path VARCHAR(500) NOT NULL,
+    access_url VARCHAR(500),
+    file_size BIGINT,
+    content_type VARCHAR(100),
+    extension VARCHAR(20),
+    access_type VARCHAR(20) NOT NULL,
+    business_type VARCHAR(50),
+    business_id BIGINT,
+    uploader_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    delete_id BIGINT DEFAULT 0
+);
+

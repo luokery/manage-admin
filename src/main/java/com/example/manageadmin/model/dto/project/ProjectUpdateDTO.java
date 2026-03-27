@@ -1,12 +1,10 @@
 package com.example.manageadmin.model.dto.project;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-import com.example.manageadmin.validation.UpdateGroup;
 
 @Data
 @Schema(description = "项目更新请求")
