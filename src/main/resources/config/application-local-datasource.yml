@@ -4,27 +4,20 @@ spring:
   datasource:
     # 1. 连接池使用 druid
     type: com.alibaba.druid.pool.DruidDataSource
-#    # 2. 使用数据库平台(非必须)
-#    platform: h2
-#    # 3. url请修改为您的数据库连接
-#    driver-class-name: org.h2.Driver
+    # 2. 使用数据库平台(非必须) h2 mysql postgresql
+    platform: postgresql
+    # 3. url请修改为您的数据库连接 org.h2.Driver  com.mysql.cj.jdbc.Driver  org.postgresql.Driver
+    driver-class-name: 
 #    url: jdbc:h2:mem:managedb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 #    username: sa
 #    password: 
-    # 2. 使用数据库平台(非必须)
-    platform: mysql
-    # 3. url请修改为您的数据库连接
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql.sqlpub.com:3306/manage_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root01
-    password: 8fD0yZuRMSR3eegN
-#    # 2. 使用数据库平台(非必须)
-#    platform: postgresql
-#    # 3. url请修改为您的数据库连接
-#    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://127.0.0.1:5432/manage_db?sslmode=disable&TimeZone=UTC
-#    username: postgres
+#    url: jdbc:mysql://mysql.sqlpub.com:3306/manage_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+#    username: root01
 #    password: 8fD0yZuRMSR3eegN
+#    # jdbc:postgresql://127.0.0.1:5432/manage_db?sslmode=disable&TimeZone=UTC
+    url: jdbc:postgresql://cp-dear-dawn-da24e240.pg5.aidap-global.cn-beijing.volces.com:5432/postgres?sslmode=require&channel_binding=require
+    username: postgres
+    password: FNq26Oe587ac4Awwne
     druid:
       # 连接池配置
       initial-size: 5
@@ -97,8 +90,8 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: classpath:db/schema.sql
-      data-locations: classpath:db/data.sql
+      schema-locations: classpath:db/schema_${spring.datasource.platform}.sql
+      data-locations: classpath:db/data_${spring.datasource.platform}.sql
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

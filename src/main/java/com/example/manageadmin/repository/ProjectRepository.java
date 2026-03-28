@@ -53,7 +53,7 @@ public interface ProjectRepository extends BaseRepository<Project>{
      * @param year 年份，如 2024
      * @return 最大序号，如没有返回 null
      */
-    @Select("SELECT MAX(CAST(SUBSTRING(project_code, 16, 3) AS UNSIGNED)) " +
+    @Select("SELECT MAX(CAST(SUBSTRING(project_code, 16, 3) AS BIGINT)) " +
             "FROM projects " +
             "WHERE project_code LIKE CONCAT('PRJ-', #{year}, '-', #{month}, '-', #{day}, '-%') " +
             "AND delete_id = 0 " +

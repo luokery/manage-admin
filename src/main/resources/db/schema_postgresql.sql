@@ -171,10 +171,10 @@ CREATE TRIGGER update_file_info_updated_at BEFORE UPDATE ON file_info
 -- 创建索引以提高查询性能
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_users_deleted ON users(deleted);
+CREATE INDEX IF NOT EXISTS idx_users_delete_id ON users(delete_id);
 CREATE INDEX IF NOT EXISTS idx_projects_project_code ON projects(project_code);
 CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
-CREATE INDEX IF NOT EXISTS idx_projects_deleted ON projects(deleted);
+CREATE INDEX IF NOT EXISTS idx_projects_delete_id ON projects(delete_id);
 CREATE INDEX IF NOT EXISTS idx_resources_parent_id ON resources(parent_id);
 CREATE INDEX IF NOT EXISTS idx_resources_code ON resources(code);
 CREATE INDEX IF NOT EXISTS idx_resources_type ON resources(type);
